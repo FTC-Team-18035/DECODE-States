@@ -12,7 +12,7 @@ public class TrajectorySCRIMMAGE {
             double b = ((2.0 * GoalHeight) / targetDistance) - m; // The "b" value in the parabola equation
             double rawlaunchAngle = Math.atan(b); // The launch angle in radians
             //Degraded (hopefully) double launchVelocity = (1.0 / Math.cos(rawlaunchAngle)) * Math.sqrt(g / (2.0 * a));
-            double launchVelocity = ((1.0 / Math.cos(rawlaunchAngle)) * (Math.sqrt(g / (2.0 * a)))) * 1.77;  //1.8 little too strong, 1.6 too low, 2.6 is too high//12.21730476; //The launch velocity in cm/s
+            double launchVelocity = ((1.0 / Math.cos(rawlaunchAngle)) * (Math.sqrt(g / (2.0 * a)))) * 1.75;  //1.77 new intake adjustment, 1.8 little too strong, 1.6 too low, 2.6 is too high//12.21730476; //The launch velocity in cm/s
 
             return launchVelocity; // these are the target for the shooter's flywheel and servo angle adjustment
         } else { //TODO: adjust these values to make it able to shoot in the close launch zone
@@ -24,7 +24,7 @@ public class TrajectorySCRIMMAGE {
             double b = ((2.0 * GoalHeight) / targetDistance) - m; // The "b" value in the parabola equation
             double rawlaunchAngle = Math.atan(b); // The launch angle in radians
             //Degraded (hopefully) double launchVelocity = (1.0 / Math.cos(rawlaunchAngle)) * Math.sqrt(g / (2.0 * a));
-            double launchVelocity = ((1.0 / Math.cos(rawlaunchAngle)) * (Math.sqrt(g / (2.0 * a)))) * 1.77;  //1.8 little too strong, 1.6 too low, 2.6 is too high//12.21730476; //The launch velocity in cm/s
+            double launchVelocity = ((1.0 / Math.cos(rawlaunchAngle)) * (Math.sqrt(g / (2.0 * a)))) * 1.75;  //1.77 new intake adjustment, 1.8 little too strong, 1.6 too low, 2.6 is too high//12.21730476; //The launch velocity in cm/s
 
             return launchVelocity; // these are the target for the shooter's flywheel and servo angle adjustment
         }
