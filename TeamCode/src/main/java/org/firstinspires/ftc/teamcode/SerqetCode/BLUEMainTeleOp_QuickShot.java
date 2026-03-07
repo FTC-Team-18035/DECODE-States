@@ -5,15 +5,19 @@ import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.constants.PinpointConstants;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-@TeleOp(name = "RED Main TeleOp", group = "PedroPathing")
-public class REDTeleOp extends LinearOpMode {
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
+@TeleOp(name = "BLUE TeleOp_QuickShot", group = "PedroPathing")
+public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
 
     /* =========================================================
        LIMELIGHT GEOMETRY CONSTANTS
@@ -33,7 +37,7 @@ public class REDTeleOp extends LinearOpMode {
        ========================================================= */
 
     // Proportional gain converting heading error → turn power
-    private static final double ALIGN_KP = -0.015;
+    private static final double ALIGN_KP = -0.015;      // TODO revisit this tuning value
 
     // Minimum turn command to overcome drivetrain friction
     private static final double ALIGN_MIN_CMD = 0.09;
@@ -66,6 +70,8 @@ public class REDTeleOp extends LinearOpMode {
     // Telemetry values
     public double leftError;
     public double rightError;
+
+    public Pose initialPose = new Pose();   // New alignment calculation help
 
     /* =========================================================
        HARDWARE
@@ -125,7 +131,7 @@ public class REDTeleOp extends LinearOpMode {
         lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(8); // AprilTag pipeline
+        limelight.pipelineSwitch(6); // AprilTag pipeline
         limelight.start();
 
         /* ---------------- Drive / Localization Setup ---------------- */
@@ -168,13 +174,14 @@ public class REDTeleOp extends LinearOpMode {
         // Disable manual driving during shooting sequence
         if (shootState != ShootState.IDLE) return;
 
-        if (gamepad1.left_trigger > .5) {
+        if (gamepad1.left_trigger > .5){
             scalar = 1;
-        } else if (gamepad1.left_trigger < .5) {
+        }
+        else if (gamepad1.left_trigger < .5) {
             scalar = .5;
         }
 
-        if (gamepad1.left_trigger > .75 && gamepad1.right_trigger > .75) {
+        if(gamepad1.left_trigger > .75 && gamepad1.right_trigger > .75) {
             heading = follower.getHeading();
         }
         follower.setTeleOpDrive(
@@ -207,6 +214,12 @@ public class REDTeleOp extends LinearOpMode {
     /* =========================================================
        SHOOTING STATE MACHINE
        ========================================================= */
+    //new helps from Kiefer for estimation
+    Pose lastTargetPose = initialPose;
+    final double LOStimeout = .5;
+    double LOStimestamp = -LOStimeout; // Set less than zero to prevent LOS false positive for first 3 seconds of opmode
+
+
     private void handleShootingStateMachine() {
 
         /* -------- Abort if trigger released -------- */
@@ -257,8 +270,16 @@ public class REDTeleOp extends LinearOpMode {
                 }
 
                 // Horizontal offset from Limelight (degrees)
-                double tx = result.getTx() + 2;
-                double absError = Math.abs(tx);
+                //double tx = result.getTx();       // deprecated to use following estimator from Limelight full pose
+                if (tagValid) {
+                    Pose3D pose3d = result.getBotpose(); //Grab the current pose based on limelight
+                                                        // convert pose to Pedro Coordinate system by 72 reduction and degrees to radians
+                    Pose botPose = new Pose((pose3d.getPosition().x-72), (pose3d.getPosition().y-72), Math.toRadians(pose3d.getOrientation().getYaw())); //Convert limelight pose to pedropathing pose via offset and radians
+                    follower.setPose(botPose); //Set pedropathing pose to the limelight's
+                    lastTargetPose = new Pose(botPose.getX(), botPose.getY(), botPose.getHeading() - Math.toRadians(result.getTx())); //Update the last seen limelight pose
+                    LOStimestamp = getRuntime();
+                }
+                double absError = Math.abs((lastTargetPose.getHeading() - follower.getPose().getHeading()));
 
                 /* ----- Track whether we're still improving ----- */
                 if (absError < bestHeadingErrorDeg - ALIGN_MIN_IMPROVEMENT) {
@@ -269,14 +290,19 @@ public class REDTeleOp extends LinearOpMode {
                 }
 
                 /* ----- Compute turn command ----- */
-                double turn = ALIGN_KP * (-tx);
+                double turn = ALIGN_KP * (lastTargetPose.getHeading() - follower.getPose().getHeading());
+                if (LOStimestamp + LOStimeout < getRuntime()) { //LOS timed out, do not apply turn control
+                    turn = 0;
+                }
+                // Instead of grabbing the limelight error, use the difference between the target and estimated poses.
+                // Should work the exact same way as the previous method if line of sight is unbroken.
 
                 // Enforce minimum command if still meaningfully off
                 if (Math.abs(turn) < ALIGN_MIN_CMD &&
                         absError > ALIGN_ACCEPTABLE_ERROR) {
                     turn = Math.copySign(ALIGN_MIN_CMD, turn);
                 }
-
+                follower.getPoseTracker().update();
                 follower.setTeleOpDrive(0, 0, turn, false, heading);
 
                 /* ----- Exit condition ----- */
@@ -360,10 +386,12 @@ public class REDTeleOp extends LinearOpMode {
     /* =========================================================
        LIFT
        ========================================================= */
+
     private void handleLift() {
-        if (gamepad1.dpad_up && gamepad1.left_trigger > .75 && lift.getCurrentPosition() < 3600) {    //TODO Changed it so you have to be holding the left trigger to run the lift
+        if(gamepad1.dpad_up && gamepad1.left_trigger > .75 && lift.getCurrentPosition() < 3600) {    //TODO Changed it so you have to be holding the left trigger to run the lift
             lift.setPower(1);
-        } else {
+        }
+        else {
             lift.setPower(0);
         }
     }

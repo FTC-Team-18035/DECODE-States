@@ -385,6 +385,10 @@ public class BLUETeleOp extends LinearOpMode {
         smoothedDistanceCm = null;
     }
 
+    /* =========================================================
+       LIFT
+       ========================================================= */
+
     private void handleLift() {
         if (gamepad1.dpad_up && gamepad1.left_trigger > .75 && lift.getCurrentPosition() < 3600) {    //TODO Changed it so you have to be holding the left trigger to run the lift
             lift.setPower(1);
