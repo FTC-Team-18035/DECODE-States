@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-
+@Disabled
 @TeleOp(name = "BLUE Main TeleOp ***Deprecated", group = "PedroPathing")
 public class BLUETeleOp extends LinearOpMode {
 

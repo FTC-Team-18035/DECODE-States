@@ -26,10 +26,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.SerqetCode.BLUEMainTeleOpNEW_INTAKE;
 import org.firstinspires.ftc.teamcode.SerqetCode.TrajectorySCRIMMAGE;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-
 import org.firstinspires.ftc.teamcode.SerqetCode.ShooterSubsystemSCRIMMAGE;
 
 import java.util.ArrayList;
@@ -209,22 +207,8 @@ class Far_Blue_Preload extends LinearOpMode {
 
         runStartDelay(START_DELAY_SECONDS);
 
-        //alignToAprilTag();
-        //beginHoldFromCurrentPose();
-
         shootForTime(SHOOT_SECONDS);
         stopShooting();
-
-        frontLeft.setPower(-.6);
-        backLeft.setPower(-.6);
-        frontRight.setPower(.6);
-        backRight.setPower(.6);
-        sleep(250);
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        backRight.setPower(0);
-        backLeft.setPower(0);
-
 
         driveForwardInches(DRIVE_FORWARD_INCHES); //TODO: This method holds position!! Don't know why. TeleOp?
         stopDrive();
@@ -614,10 +598,6 @@ class Far_Blue_1stSpike extends OpMode {
                 }
                 break;
             case 2_5:
-                // if(actionTimer.getElapsedTimeSeconds() > 1) {
-                //     shooter.setFeedPower(0);
-                //     intake.setPower(0);
-                // }
                 if(!follower.isBusy()) {
                     shootForTime(SHOOT_SECONDS);
                     setPathState(3);
@@ -1521,18 +1501,6 @@ class Far_Blue_3rdSpike extends OpMode {
 
         score3Path = new Path(new BezierLine(pickup3Pose, score3Pose));
         score3Path.setLinearHeadingInterpolation(pickup3Pose.getHeading(), score3Pose.getHeading());
-        /*path8 = new Path(new BezierLine(pose8, pose8));
-        path8.setLinearHeadingInterpolation(pose8.getHeading(), pose8.getHeading());
-
-
-    /* Here is an example for Constant Interpolation
-    scorePreload.setConstantInterpolation(startPose.getHeading()); */
-
-        /* This is our grabPickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-       /* grabPickup1 = follower.pathBuilder()
-                .addPath(new BezierLine(scorePose, pickup1Pose))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), pickup1Pose.getHeading())
-                .build();*/
 
     }
 
@@ -1544,28 +1512,14 @@ class Far_Blue_3rdSpike extends OpMode {
                 break;
             case 1_10:
                 if (!follower.isBusy()) {
-                    //shooter.setFeedPower(-1);
-                    //shooter.setTarget(1180, 20);
                     shootForTime(SHOOT_SECONDS);
                     setPathState(1);
                 }
                 break;
             case 1:
-
-            /* You could check for
-            - Follower State: "if(!follower.isBusy()) {}"
-            - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
-            - Robot Position: "if(follower.getPose().getX() > 36) {}"
-            */
-
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if (!follower.isBusy()) {
-
-                    /* Score Preload */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
-                    follower.followPath(readyPath);
-
+                     follower.followPath(readyPath);
                     setPathState(1_5);
                 }
                 break;
@@ -1582,20 +1536,13 @@ class Far_Blue_3rdSpike extends OpMode {
             case 2:
                 if (!follower.isBusy()) {
                     intake.setPower(0);
-
                     follower.setMaxPower(MAX_DRIVE_SPEED);
                     follower.followPath(pickup1Path);
-                    //actionTimer.resetTimer();
                     actionTimer.resetTimer();
-                   // handleIntake(-60);
                     setPathState(2_5);
                 }
                 break;
             case 2_5:
-                // if(actionTimer.getElapsedTimeSeconds() > 1) {
-                //     shooter.setFeedPower(0);
-                //     intake.setPower(0);
-                // }
                 if (!follower.isBusy()) {
                     shootForTime(SHOOT_SECONDS);
                     setPathState(3);
@@ -1603,49 +1550,36 @@ class Far_Blue_3rdSpike extends OpMode {
                 break;
             case 3:
                 if (!follower.isBusy()) {
-
                     follower.followPath(score1Path);
                     setPathState(4);
                 }
                 break;
             case 4:
                 if (!follower.isBusy()) {
-
-                    //if(shootForTime(SHOOT_SECONDS) >= SHOOT_SECONDS) {
                     startIntaking();
                     follower.setMaxPower(MAX_INTAKE_SPEED);
                     follower.followPath(lineup2Path);
                     pathTimer.resetTimer();
                     setPathState(5);
                 }
-                //}
                 break;
             case 5:
 
                 if (!follower.isBusy()) {
-
                     follower.setMaxPower(MAX_DRIVE_SPEED);
-                    // actionTimer.resetTimer();
                     follower.followPath(pickup2Path);
                     actionTimer.resetTimer();
-                   // handleIntake(-60);
                     setPathState(5_5);
                 }
                 break;
             case 5_5:
-                // if(actionTimer.getElapsedTimeSeconds() > 1) {
-                //   shooter.setFeedPower(0);
-                // intake.setPower(0);
-                //}
-                if (!follower.isBusy()) {
+                 if (!follower.isBusy()) {
                     shootForTime(SHOOT_SECONDS);
                     setPathState(6);
                 }
                 break;
             case 6:
                 if (!follower.isBusy()) {
-
-                    //if(shootForTime(SHOOT_SECONDS) >= SHOOT_SECONDS) {
                     follower.followPath(lineup3Path);
                     setPathState(7);
                 }
@@ -1820,16 +1754,11 @@ class Far_Blue_3rdSpike extends OpMode {
                 shooter.stop();
                 intake.setPower(0);
                 startFeeding = false;
-                //stopShoot();
             }
             else {
-                //intake.setPower(1);
-
                 follower.update();
                 updateHold();
-
                 updateDistanceAndShooterTarget();
-
                 if(startFeeding) {
                     intake.setPower(1);
                 }
@@ -1839,7 +1768,6 @@ class Far_Blue_3rdSpike extends OpMode {
                 telemetry.addData("flywheel tolerance", FLYWHEEL_TOLERANCE);
                 telemetry.addData("start feeding", startFeeding);
                 telemetry.addData("Shooting (s)", timer.seconds());
-                //telemetry.addData("Distance (cm)", targetDistanceCm);
                 telemetry.update();
             }
         }
@@ -1925,7 +1853,6 @@ class Far_Blue_3rdSpike extends OpMode {
         return radians;
     }
 }
-
 
 //TODO NEAR 1st SPIKE
 class Near_Blue_1stSpike extends OpMode {
@@ -2049,28 +1976,14 @@ class Near_Blue_1stSpike extends OpMode {
                 break;
             case 1_10:
                 if(!follower.isBusy()) {
-                    //shooter.setFeedPower(-1);
-                    //shooter.setTarget(1180, 20);
                     shootForTime(SHOOT_SECONDS);
                     setPathState(1);
                 }
                 break;
             case 1:
-
-            /* You could check for
-            - Follower State: "if(!follower.isBusy()) {}"
-            - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
-            - Robot Position: "if(follower.getPose().getX() > 36) {}"
-            */
-
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if (!follower.isBusy()) {
-
-                    /* Score Preload */
-
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
                     follower.followPath(readyPath);
-
                     setPathState(1_5);
                 }
                 break;
@@ -2094,10 +2007,6 @@ class Near_Blue_1stSpike extends OpMode {
                 }
                 break;
             case 2_5:
-                // if(actionTimer.getElapsedTimeSeconds() > 1) {
-                //     intake.setPower(0);
-                //     intake.setPower(0);
-                // }
                 if(!follower.isBusy()) {
                     shootForTime(SHOOT_SECONDS);
                     setPathState(3);
@@ -2926,7 +2835,6 @@ class Near_Blue_3rdSpike extends OpMode {
 
     private final Pose startPose = new Pose(56, 146, Math.toRadians(270)); // Start Pose of our robot.
     private final Pose score1Pose = new Pose(66, 110, Math.toRadians(138)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
-    //private final Pose score2Pose = new Pose(61,13 , Math.toRadians(125));
     private final Pose pickup1Pose = new Pose(26, 100, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose pickup2Pose = new Pose(26,76, Math.toRadians(180));
     private final Pose pickup3Pose = new Pose(26, 52, Math.toRadians(180));
@@ -3042,10 +2950,6 @@ class Near_Blue_3rdSpike extends OpMode {
                 }
                 break;
             case 2_5:
-                // if(actionTimer.getElapsedTimeSeconds() > 1) {
-                //     intake.setPower(0);
-                //     intake.setPower(0);
-                // }
                 if(!follower.isBusy()) {
                     shootForTime(SHOOT_SECONDS);
                     setPathState(3);
@@ -3053,14 +2957,12 @@ class Near_Blue_3rdSpike extends OpMode {
                 break;
             case 3:
                 if (!follower.isBusy()) {
-
                     follower.followPath(score1Path);
                     setPathState(3_10);
                 }
                 break;
             case 3_10:
                 if (!follower.isBusy()) {
-
                     shootForTime(SHOOT_SECONDS);
                     setPathState(4);
                 }
@@ -3076,10 +2978,8 @@ class Near_Blue_3rdSpike extends OpMode {
                 break;
             case 5:
                 if (!follower.isBusy()) {
-
                     follower.setMaxPower(MAX_DRIVE_SPEED);
                     follower.followPath(pickup2Path);
-                    //actionTimer.resetTimer();
                     setPathState(5_5);
                 }
                 break;
@@ -3091,14 +2991,12 @@ class Near_Blue_3rdSpike extends OpMode {
                 break;
             case 6:
                 if (!follower.isBusy()) {
-
                     follower.followPath(score2Path);
                     setPathState(6_10);
                 }
                 break;
             case 6_10:
                 if (!follower.isBusy()) {
-
                     shootForTime(SHOOT_SECONDS);
                     setPathState(7);
                 }
@@ -3279,23 +3177,17 @@ class Near_Blue_3rdSpike extends OpMode {
                 shooter.stop();
                 intake.setPower(0);
                 startFeeding = false;
-                //stopShoot();
             }
             else {
-                //intake.setPower(1);
-
                 follower.update();
                 updateHold();
-
                 updateDistanceAndShooterTarget();
-
                 if(startFeeding) {
                     intake.setPower(1);
                 }
                 shooter.update();
 
                 telemetry.addData("Shooting (s)", timer.seconds());
-                //telemetry.addData("Distance (cm)", targetDistanceCm);
                 telemetry.update();
             }
         }
@@ -3349,7 +3241,6 @@ class Near_Blue_3rdSpike extends OpMode {
         holdHeadingRad = follower.getPose().getHeading();
         holdInitialized = true;
     }
-
 
     private void updateHold() {
         if (!holdInitialized) {
