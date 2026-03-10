@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 
-@TeleOp(name = "BLUE Main TeleOp", group = "PedroPathing")
+@TeleOp(name = "BLUE Main TeleOp ***Deprecated", group = "PedroPathing")
 public class BLUETeleOp extends LinearOpMode {
 
 

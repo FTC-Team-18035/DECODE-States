@@ -12,8 +12,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-@TeleOp(name = "RED Main TeleOp ***Deprecated", group = "PedroPathing")
-public class REDTeleOp extends LinearOpMode {
+import org.firstinspires.ftc.teamcode.SerqetCode.TrajectorySCRIMMAGE;
+import org.firstinspires.ftc.teamcode.SerqetCode.ShooterSubsystemSCRIMMAGE;
+
+@TeleOp(name = "BLUE Main TeleOp", group = "PedroPathing")
+public class BLUEMainTeleOpNEW_INTAKE extends LinearOpMode {
 
     /* =========================================================
        LIMELIGHT GEOMETRY CONSTANTS
@@ -127,7 +130,7 @@ public class REDTeleOp extends LinearOpMode {
         lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(8); // AprilTag pipeline
+        limelight.pipelineSwitch(6); // AprilTag pipeline
         limelight.start();
 
         /* ---------------- Drive / Localization Setup ---------------- */
@@ -261,7 +264,7 @@ public class REDTeleOp extends LinearOpMode {
                 }
 
                 // Horizontal offset from Limelight (degrees)
-                double tx = result.getTx() + 2;
+                double tx = result.getTx();
                 double absError = Math.abs(tx);
 
                 /* ----- Track whether we're still improving ----- */
