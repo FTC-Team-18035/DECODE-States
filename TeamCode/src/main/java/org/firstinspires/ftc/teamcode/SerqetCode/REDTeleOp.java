@@ -7,11 +7,13 @@ import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.constants.PinpointConstants;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+@Disabled
 @TeleOp(name = "RED Main TeleOp ***Deprecated", group = "PedroPathing")
 public class REDTeleOp extends LinearOpMode {
 
@@ -252,7 +254,7 @@ public class REDTeleOp extends LinearOpMode {
                  - Error is already acceptable AND
                  - Further improvement has stalled
                ===================================================== */
-            case ALIGNING: {        // TODO Have Sarah look into this to make it faster
+            case ALIGNING: {
 
                 // Manual override → skip alignment and keep scoring
                 if (gamepad1.b) {

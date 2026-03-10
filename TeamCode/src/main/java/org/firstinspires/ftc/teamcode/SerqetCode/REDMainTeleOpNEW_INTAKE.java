@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.SerqetCode.TrajectorySCRIMMAGE;
 import org.firstinspires.ftc.teamcode.SerqetCode.ShooterSubsystemSCRIMMAGE;
+
 @TeleOp(name = "RED Main TeleOp", group = "PedroPathing")
 public class REDMainTeleOpNEW_INTAKE extends LinearOpMode {
 
@@ -68,7 +69,7 @@ public class REDMainTeleOpNEW_INTAKE extends LinearOpMode {
     // Telemetry values
     public double leftError;
     public double rightError;
-    public double pullBackTicks = 0;
+    public double pullBackTicks = -60;
 
     /* =========================================================
        HARDWARE
@@ -175,14 +176,13 @@ public class REDMainTeleOpNEW_INTAKE extends LinearOpMode {
         // Disable manual driving during shooting sequence
         if (shootState != ShootState.IDLE) return;
 
-        if (gamepad1.left_trigger > .5){
+        if (gamepad1.left_trigger > .5) {
             scalar = 1;
-        }
-        else if (gamepad1.left_trigger < .5) {
+        } else if (gamepad1.left_trigger < .5) {
             scalar = .5;
         }
 
-        if(gamepad1.left_trigger > .75 && gamepad1.right_trigger > .75) {
+        if (gamepad1.left_trigger > .75 && gamepad1.right_trigger > .75) {
             heading = follower.getHeading();
         }
         follower.setTeleOpDrive(
@@ -365,8 +365,8 @@ public class REDMainTeleOpNEW_INTAKE extends LinearOpMode {
     }
 
     private void handlePullBack(double target) {
-        if(shootState == ShootState.SPINNING_UP) return;
-        if(gamepad1.xWasPressed()) {
+        if (shootState == ShootState.SPINNING_UP) return;
+        if (gamepad1.xWasPressed()) {
             intake.setPower(0);
             intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             intake.setTargetPosition(0);
@@ -380,16 +380,16 @@ public class REDMainTeleOpNEW_INTAKE extends LinearOpMode {
             } else {
                 intake.setPower(0);
                 shooter.setTarget(0, .205);
+                pullBackStarted = false;
             }
         }
 
     }
 
     private void handleLift() {
-        if(gamepad1.dpad_up && gamepad1.left_trigger > .75 && lift.getCurrentPosition() < 3600) {    //TODO Changed it so you have to be holding the left trigger to run the lift
+        if (gamepad1.dpad_up && gamepad1.left_trigger > .75 && lift.getCurrentPosition() < 3600) {    //TODO Changed it so you have to be holding the left trigger to run the lift
             lift.setPower(1);
-        }
-        else {
+        } else {
             lift.setPower(0);
         }
     }

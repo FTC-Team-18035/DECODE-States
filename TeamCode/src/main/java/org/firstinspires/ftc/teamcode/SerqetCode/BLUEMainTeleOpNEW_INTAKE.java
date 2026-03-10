@@ -255,7 +255,7 @@ public class BLUEMainTeleOpNEW_INTAKE extends LinearOpMode {
                  - Error is already acceptable AND
                  - Further improvement has stalled
                ===================================================== */
-            case ALIGNING: {        // TODO Have Sarah look into this to make it faster
+            case ALIGNING: {
 
                 // Manual override → skip alignment and keep scoring
                 if (gamepad1.b) {
