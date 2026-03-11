@@ -70,6 +70,7 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
     // Telemetry values
     public double leftError;
     public double rightError;
+    public double pullBackTicks = -60;
 
     public Pose initialPose = new Pose();   // New alignment calculation help
 
@@ -113,6 +114,7 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
     private double heading = 0;
 
     public double scalar;
+    public boolean pullBackStarted = false;
 
     @Override
     public void runOpMode() {
@@ -159,6 +161,9 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
             handleShootingStateMachine();
             handleLift();
 
+            handlePullBack(pullBackTicks);
+
+
             shooter.update();
             follower.update();
             telemetry.update();
@@ -201,13 +206,12 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
 
         if (gamepad1.left_bumper) {
             intake.setPower(1.0);
-            shooter.setFeedPower(-1.0);
+            shooter.setTarget(-250, .205);
         } else if (gamepad1.right_bumper) {
             intake.setPower(-1.0);
-            shooter.setFeedPower(1.0);
         } else {
             intake.setPower(0.0);
-            shooter.setFeedPower(0.0);
+            shooter.setTarget(0, .205);
         }
     }
 
@@ -358,7 +362,7 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
                ===================================================== */
             case FEEDING:
                 follower.setTeleOpDrive(0, 0, 0, false, heading);
-                shooter.setFeedPower(-1.0);
+                intake.setPower(1);
                 break;
 
             default:
@@ -379,13 +383,31 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
     private void abortShot() {
         shootState = ShootState.IDLE;
         shooter.stop();
-        shooter.setFeedPower(0.0);
+        intake.setPower(0);
         smoothedDistanceCm = null;
     }
 
-    /* =========================================================
-       LIFT
-       ========================================================= */
+    private void handlePullBack(double target) {
+        if (shootState == ShootState.SPINNING_UP) return;
+        if (gamepad1.xWasPressed()) {
+            intake.setPower(0);
+            intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            intake.setTargetPosition(0);
+            intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            pullBackStarted = true;
+        }
+        if (shootState != ShootState.SPINNING_UP && pullBackStarted) {
+            if (intake.getCurrentPosition() > target) {
+                intake.setPower(-1);
+                shooter.setTarget(-250, .205);
+            } else {
+                intake.setPower(0);
+                shooter.setTarget(0, .205);
+                pullBackStarted = false;
+            }
+        }
+
+    }
 
     private void handleLift() {
         if(gamepad1.dpad_up && gamepad1.left_trigger > .75 && lift.getCurrentPosition() < 3600) {    //TODO Changed it so you have to be holding the left trigger to run the lift
