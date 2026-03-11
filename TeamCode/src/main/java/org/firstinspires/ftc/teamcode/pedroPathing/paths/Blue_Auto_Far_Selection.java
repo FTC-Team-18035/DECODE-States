@@ -47,8 +47,9 @@ import java.util.List;
     static ArrayList<String> changes = new ArrayList<>();
 
     public Blue_Auto_Far_Selection() {
-        super("Select a Autonomous", s -> {
-            s.folder("Far Spikes", l -> {
+        super("Select an Autonomous", s -> {
+            s.folder("Far Position", l -> {
+                l.add("Preload  ", Far_Blue_Preload::new);
                 l.add("1st Spike", Far_Blue_1stSpike::new);
                 l.add("2nd Spike", Far_Blue_2ndSpike::new);
                 l.add("3rd Spike", Far_Blue_3rdSpike::new);
@@ -104,17 +105,14 @@ import java.util.List;
 
 }
 
-//TODO PRELOAD
-//@Autonomous(preselectTeleOp = "BLUE Main TeleOp")
-class Far_Blue_Preload extends LinearOpMode {
-    private DcMotorEx frontRight, frontLeft, backRight, backLeft;
+class Far_Blue_Preload extends OpMode {
 
-    /* =========================================================
-       TUNABLE AUTONOMOUS CONSTANTS
-       ========================================================= */
-    private static final double SHOOT_SECONDS = 4.5;           // TODO: Change this if isn't enough time or too much...6 was too much
+    private static final double SHOOT_SECONDS = 1.75;           // TODO: Change this if isn't enough time or too much...6 was too much
+    private static final double INTAKE_DISTANCE = 2250;
     private static final double DRIVE_FORWARD_INCHES = 20.0; //TODO: Change if distance is wrong
 
+    private static final double MAX_DRIVE_SPEED = .8; // Change this for the max speed
+    private static final double MAX_INTAKE_SPEED = .5; // Change this if we need to intake slower
     private static final double DRIVE_POWER = 0.7;
     private static final double DRIVE_TIMEOUT_SECONDS = 20.0;
 
@@ -162,146 +160,243 @@ class Far_Blue_Preload extends LinearOpMode {
     private Follower follower;
     private ShooterSubsystemSCRIMMAGE shooter;
 
+    private DcMotorEx intake;
+
     private int alignStallCounter = 0;
     private double bestHeadingErrorDeg = Double.MAX_VALUE;
 
     private Double smoothedDistanceCm = null;
     private double targetDistanceCm = DEFAULT_DISTANCE_CM;
+    private boolean pullBackStarted = false;
+    private boolean intaking = false;
+    private boolean startFeeding = false;
+    private boolean intakeReset = false;
 
     private BezierPoint holdPoint = null;
     private double holdHeadingRad = 0.0;
     private boolean holdInitialized = false;
+    private Timer pathTimer, actionTimer, opmodeTimer;
+    private ElapsedTime intakeTimer = new ElapsedTime();
+    public double leftError;
+    public double rightError;
+    private static final double FLYWHEEL_TOLERANCE = 50;
 
+    private int pathState;
+
+    private final Pose startPose = new Pose(56, 8, Math.toRadians(90)); // Start Pose of our robot.
+    private final Pose scorePose = new Pose(53.6, 13/*11.1*/, Math.toRadians(108)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose movePose = new Pose(56, 23, Math.toRadians(180)); // Out to score Move points.
+
+    private Path scorePreload;
+    private Path movePath;
+
+
+    public void buildPaths() {
+
+        scorePreload = new Path(new BezierLine(startPose, scorePose));
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .5);
+
+        movePath = new Path(new BezierLine(scorePose, movePose));
+        movePath.setLinearHeadingInterpolation(scorePose.getHeading(), movePose.getHeading(), .8);
+
+    }
+
+    public void autonomousPathUpdate() {
+        switch (pathState) {
+            case 0:
+                follower.followPath(scorePreload);
+                setPathState(2);
+                break;
+            case 2:
+                if(!follower.isBusy()) {
+                    shootForTime(SHOOT_SECONDS);
+                    setPathState(3);
+                }
+                break;
+            case 3:
+                if (!follower.isBusy()) {
+                    follower.followPath(movePath);
+                    setPathState(4);
+                }
+                break;
+            case 4:
+                if (!follower.isBusy()) {
+                    setPathState(-1);
+                }
+                break;
+            case -1:
+                if (!follower.isBusy()) {
+                    intake.setPower(0);
+                    requestOpModeStop();
+                }
+
+        }
+
+    }
+
+
+    /**
+     * These change the states of the paths and actions. It will also reset the timers of the individual switches
+     **/
+    public void setPathState(int pState) {
+        pathState = pState;
+        pathTimer.resetTimer();
+    }
+
+    /**
+     * This is the main loop of the OpMode, it will run repeatedly after clicking "Play".
+     **/
     @Override
-    public void runOpMode() {
-        frontRight = hardwareMap.get(DcMotorEx.class, "front_right");
-        frontLeft = hardwareMap.get(DcMotorEx.class, "front_left");
-        backRight = hardwareMap.get(DcMotorEx.class, "back_right");
-        backLeft = hardwareMap.get(DcMotorEx.class, "back_left");
+    public void loop() {
 
-        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // These loop the movements of the robot, these must be called continuously in order to work
+        follower.update();
+        autonomousPathUpdate();
+        shooter.update();
+
+        if (intaking) {
+            intake();
+        }
+
+        // Feedback to Driver Hub for debugging
+        telemetry.addData("path state", pathState);
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.update();
+    }
+
+    /**
+     * This method is called once at the init of the OpMode.
+     **/
+    @Override
+    public void init() {
+        pathTimer = new Timer();
+        opmodeTimer = new Timer();
+        actionTimer = new Timer();
+        actionTimer.resetTimer();
+        opmodeTimer.resetTimer();
 
 
+        follower = Constants.createFollower(hardwareMap);
+        follower.setMaxPower(MAX_DRIVE_SPEED);
         shooter = new ShooterSubsystemSCRIMMAGE(hardwareMap);
+
+        intake = hardwareMap.get(DcMotorEx.class, "intake");
+        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(6); // matches BLUEMainTeleOpWORKING
         limelight.start();
 
-        follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(0, 0, 0));
-
-        telemetry.addLine("BLUE Auto ready: align -> shoot -> drive 12\"");
+        buildPaths();
+        follower.setStartingPose(startPose);
+        telemetry.addLine("Blue Auto ready: Preload and Move");
         telemetry.update();
 
-        waitForStart();
-        if (!opModeIsActive()) {
-            limelight.stop();
-            return;
-        }
-
-        follower.startTeleOpDrive();
-
-        runStartDelay(START_DELAY_SECONDS);
-
-        shootForTime(SHOOT_SECONDS);
-        stopShooting();
-
-        driveForwardInches(DRIVE_FORWARD_INCHES); //TODO: This method holds position!! Don't know why. TeleOp?
-        stopDrive();
-
-        limelight.stop();
     }
 
-    private void runStartDelay(double seconds) {
-        if (seconds <= 0.0) return;
-
-        ElapsedTime timer = new ElapsedTime();
-        while (opModeIsActive() && timer.seconds() < seconds) {
-            double remaining = Math.max(0.0, seconds - timer.seconds());
-
-            // Keep drivetrain stopped during delay.
-            follower.setTeleOpDrive(0, 0, 0, false);
-            follower.update();
-
-            telemetry.addData("Start delay (s)", remaining);
-            telemetry.update();
-            idle();
-        }
+    /**
+     * This method is called continuously after Init while waiting for "play".
+     **/
+    @Override
+    public void init_loop() {
     }
 
-    private void alignToAprilTag() {
-        alignStallCounter = 0;
-        bestHeadingErrorDeg = Double.MAX_VALUE;
+    /**
+     * This method is called once at the start of the OpMode.
+     * It runs all the setup actions, including building paths and starting the path system
+     **/
+    @Override
+    public void start() {
+        opmodeTimer.resetTimer();
+        actionTimer.resetTimer();
+        setPathState(0);
+    }
 
-        ElapsedTime timer = new ElapsedTime();
-        while (opModeIsActive() && timer.seconds() < ALIGN_TIMEOUT_SECONDS) {
-            follower.update();
+    /**
+     * We do not use this because everything should automatically disable
+     **/
+    @Override
+    public void stop() {
+    }
 
-            LLResult result = limelight.getLatestResult();
-            boolean tagValid = result != null && result.isValid()
-                    && result.getFiducialResults() != null
-                    && !result.getFiducialResults().isEmpty();
-
-            if (!tagValid) {
-                follower.setTeleOpDrive(0, 0, 0, false);
-                telemetry.addLine("Align: no tag yet");
-                telemetry.update();
-                continue;
-            }
-
-            double tx = result.getTx() + BLUE_TX_OFFSET_DEG;
-            double absError = Math.abs(tx);
-
-            if (absError < bestHeadingErrorDeg - ALIGN_MIN_IMPROVEMENT) {
-                bestHeadingErrorDeg = absError;
-                alignStallCounter = 0;
+    private void handleIntake(double target) {
+        if (!pullBackStarted) {
+            intake.setPower(0);
+            intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            intake.setTargetPosition(0);
+            intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            pullBackStarted = true;
+        }
+        else if (pullBackStarted) {
+            if (intake.getCurrentPosition() > target) {
+                intake.setPower(-1);
+                shooter.setTarget(-250, .205);
             } else {
-                alignStallCounter++;
-            }
-
-            double turn = ALIGN_KP * (-tx);
-
-            if (Math.abs(turn) < ALIGN_MIN_CMD && absError > ALIGN_ACCEPTABLE_ERROR) {
-                turn = Math.copySign(ALIGN_MIN_CMD, turn);
-            }
-
-            follower.setTeleOpDrive(0, 0, turn, false);
-
-            telemetry.addData("Align tx", tx);
-            telemetry.addData("Align abs", absError);
-            telemetry.addData("Align stall", alignStallCounter);
-            telemetry.update();
-
-            if (absError <= ALIGN_ACCEPTABLE_ERROR && alignStallCounter >= ALIGN_STALL_CYCLES) {
-                follower.setTeleOpDrive(0, 0, 0, false);
-                return;
+                intake.setPower(0);
+                shooter.setTarget(0, .205);
+                pullBackStarted = false;
             }
         }
 
-        // timeout: stop turning
-        follower.setTeleOpDrive(0, 0, 0, false);
+    }
+    private void startIntaking() {
+        resetIntake();
+    }
+    private void resetIntake(){
+        intake.setPower(0);
+        intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intake.setTargetPosition(0);
+        intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intaking = true;
     }
 
-    private void shootForTime(double seconds) {
+    private void intake() {
+        double intakePosition = intake.getCurrentPosition();
+
+        if(intakePosition >= INTAKE_DISTANCE) {
+            intake.setPower(0);
+            intaking = false;
+        }
+        else {
+            intake.setPower(1);
+        }
+    }
+
+    private double shootForTime(double seconds) {
         ElapsedTime timer = new ElapsedTime();
 
-        while (opModeIsActive() && timer.seconds() < seconds) {
-            follower.update();
-            updateHold();
+        while (opmodeTimer.getElapsedTimeSeconds() < 30 && timer.seconds() < seconds + .2) {
+            if(timer.seconds() > seconds) {
+                shooter.stop();
+                intake.setPower(0);
+                startFeeding = false;
+            }
+            else {
 
-            updateDistanceAndShooterTarget();
+                follower.update();
+                updateHold();
+                updateDistanceAndShooterTarget();
 
-            shooter.setFeedPower(-1.0); // matches BLUEMainTeleOpWORKING feeding direction
-            shooter.update();
+                if(startFeeding) {
+                    intake.setPower(1);
+                }
+                shooter.update();
 
-            telemetry.addData("Shooting (s)", timer.seconds());
-            telemetry.addData("Distance (cm)", targetDistanceCm);
-            telemetry.update();
+                telemetry.addData("Shooting (s)", timer.seconds());
+                //telemetry.addData("Distance (cm)", targetDistanceCm);
+                telemetry.update();
+            }
         }
+        return timer.seconds();
+    }
+
+    private void stopShoot() {
+        shooter.setTarget(0, .205);
+        shooter.setFeedPower(0);
+        shooter.update();
     }
 
     private void updateDistanceAndShooterTarget() {
@@ -327,69 +422,16 @@ class Far_Blue_Preload extends LinearOpMode {
         double targetVelocity = TrajectorySCRIMMAGE.CalculateVelocity(targetDistanceCm);
         double targetAngle = TrajectorySCRIMMAGE.CalculateAngle(targetDistanceCm);
         shooter.setTarget(targetVelocity, targetAngle);
-    }
 
-    private void stopShooting() {
-        shooter.setFeedPower(0.0);
-        shooter.stop();
-    }
+        leftError = Math.abs(Math.abs(
+                shooter.getLeftVelocity()) - targetVelocity);
+        rightError = Math.abs(Math.abs(
+                shooter.getRightVelocity()) - targetVelocity);
 
-    //TODO: for some reason, this method holds position nearly perfectly, find out why.
-    /*private void driveForwardInches(double inches) {
-        Pose startPose = follower.getPose();
-        ElapsedTime timer = new ElapsedTime();
-
-        while (opModeIsActive() && timer.seconds() < DRIVE_TIMEOUT_SECONDS) {
-
-            Pose currentPose = follower.getPose();
-            double dx = currentPose.getX() - startPose.getX();
-            double dy = currentPose.getY() - startPose.getY();
-            double traveled = Math.hypot(dx, dy);
-
-            if (traveled >= inches) {
-                break;
-            }
-
-            follower.setTeleOpDrive(-.75, 0, 0, false);
-            telemetry.addData("Drive traveled (in)", traveled);
-            telemetry.update();
+        if (leftError < FLYWHEEL_TOLERANCE ||
+                rightError < FLYWHEEL_TOLERANCE) {
+            startFeeding = true;
         }
-    }
-     */
-    private void driveForwardInches(double inches) {
-        Pose startPose = follower.getPose();
-        ElapsedTime timer = new ElapsedTime();
-
-        while (opModeIsActive() && timer.seconds() < DRIVE_TIMEOUT_SECONDS) {
-
-            follower.update();
-
-            Pose currentPose = follower.getPose();
-            double dx = currentPose.getX() - startPose.getX();
-            double dy = currentPose.getY() - startPose.getY();
-            double traveled = Math.hypot(dx, dy);
-
-            if (traveled >= inches) {
-                frontRight.setPower(0);
-                frontLeft.setPower(0);
-                backRight.setPower(0);
-                backLeft.setPower(0);
-                break;
-            }
-
-            frontRight.setPower(.6);
-            frontLeft.setPower(.6);
-            backRight.setPower(.6);
-            backLeft.setPower(.6);
-
-            telemetry.addData("Drive traveled (in)", traveled);
-            telemetry.update();
-        }
-    }
-
-    private void stopDrive() {
-        follower.setTeleOpDrive(0, 0, 0, false);
-        follower.update();
     }
 
     private void beginHoldFromCurrentPose() {
@@ -416,7 +458,6 @@ class Far_Blue_Preload extends LinearOpMode {
             turn = clamp(turn, -HOLD_MAX_TURN, HOLD_MAX_TURN);
         }
 
-        follower.holdPoint(holdPoint, turn);
     }
 
     private static double clamp(double value, double min, double max) {
@@ -678,6 +719,9 @@ class Far_Blue_1stSpike extends OpMode {
 
         buildPaths();
         follower.setStartingPose(startPose);
+
+        telemetry.addLine("Blue Auto ready: Far-1st Spike");
+        telemetry.update();
 
     }
 
@@ -1167,6 +1211,9 @@ class Far_Blue_2ndSpike extends OpMode {
 
         buildPaths();
         follower.setStartingPose(startPose);
+
+        telemetry.addLine("Blue Auto ready: Far-2nd Spike");
+        telemetry.update();
 
     }
 
@@ -1676,6 +1723,9 @@ class Far_Blue_3rdSpike extends OpMode {
         buildPaths();
         follower.setStartingPose(startPose);
 
+        telemetry.addLine("Blue Auto ready: Far-3rd Spike");
+        telemetry.update();
+
     }
 
     /**
@@ -2087,6 +2137,9 @@ class Near_Blue_1stSpike extends OpMode {
 
         buildPaths();
         follower.setStartingPose(startPose);
+
+        telemetry.addLine("Blue Auto ready: Near-1st Spike");
+        telemetry.update();
 
     }
 
@@ -2571,6 +2624,9 @@ class Near_Blue_2ndSpike extends OpMode {
 
         buildPaths();
         follower.setStartingPose(startPose);
+
+        telemetry.addLine("Blue Auto ready: Near-2nd Spike");
+        telemetry.update();
 
     }
 
@@ -3098,6 +3154,9 @@ class Near_Blue_3rdSpike extends OpMode {
 
         buildPaths();
         follower.setStartingPose(startPose);
+
+        telemetry.addLine("Blue Auto ready: Near-3rd Spike");
+        telemetry.update();
 
     }
 
