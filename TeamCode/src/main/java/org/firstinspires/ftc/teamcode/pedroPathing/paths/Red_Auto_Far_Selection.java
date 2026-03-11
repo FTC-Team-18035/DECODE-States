@@ -1404,7 +1404,7 @@ class Far_Red_2ndSpike extends OpMode {
 class Far_Red_3rdSpike extends OpMode {
 
     private static final double SHOOT_SECONDS = 1.75;           // TODO: Change this if isn't enough time or too much...6 was too much
-    private static final double INTAKE_DISTANCE = 1700;
+    private static final double INTAKE_DISTANCE = 1750;
     private static final double DRIVE_FORWARD_INCHES = 20.0; //TODO: Change if distance is wrong
     public double leftError;
     public double rightError;
@@ -1908,7 +1908,7 @@ class Far_Red_3rdSpike extends OpMode {
 class Near_Red_1stSpike extends OpMode {
 
     private static final double SHOOT_SECONDS = 1.75;           // TODO: Change this if isn't enough time or too much...6 was too much
-    private static final double INTAKE_DISTANCE = 2275;
+    private static final double INTAKE_DISTANCE = 1750;
     private static final double DRIVE_FORWARD_INCHES = 20.0; //TODO: Change if distance is wrong
     public double leftError;
     public double rightError;
@@ -2327,7 +2327,7 @@ class Near_Red_1stSpike extends OpMode {
 class Near_Red_2ndSpike extends OpMode {
 
     private static final double SHOOT_SECONDS = 1.75;           // TODO: Change this if isn't enough time or too much...6 was too much
-    private static final double INTAKE_DISTANCE = 2275;
+    private static final double INTAKE_DISTANCE = 1750;
     private static final double DRIVE_FORWARD_INCHES = 20.0; //TODO: Change if distance is wrong
     public double leftError;
     public double rightError;
@@ -2814,7 +2814,7 @@ class Near_Red_2ndSpike extends OpMode {
 class Near_Red_3rdSpike extends OpMode {
 
     private static final double SHOOT_SECONDS = 1.75;           // TODO: Change this if isn't enough time or too much...6 was too much
-    private static final double INTAKE_DISTANCE = 2275;
+    private static final double INTAKE_DISTANCE = 1750;
     private static final double DRIVE_FORWARD_INCHES = 20.0; //TODO: Change if distance is wrong
     public double leftError;
     public double rightError;
