@@ -194,7 +194,7 @@ class Far_Red_Preload extends OpMode {
     public void buildPaths() {
 
         scorePreload = new Path(new BezierLine(startPose, scorePose));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .5);
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .8);
 
         movePath = new Path(new BezierLine(scorePose, movePose));
         movePath.setLinearHeadingInterpolation(scorePose.getHeading(), movePose.getHeading(), .8);
@@ -570,19 +570,19 @@ class Far_Red_1stSpike extends OpMode {
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
         scorePreload = new Path(new BezierLine(startPose, scorePose));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .5);
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .8);
 
         readyPath = new Path(new BezierLine(scorePose, lineup1Pose));
         readyPath.setLinearHeadingInterpolation(scorePose.getHeading(), lineup1Pose.getHeading(), .8);
 
         lineup1Path = new Path(new BezierLine(lineup1Pose, pickup1Pose)) ;
-        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .5);
+        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .8);
 
         pickup1Path = new Path(new BezierLine(pickup1Pose, scorePose));
         pickup1Path.setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading(), .8);
 
         score1Path = new Path(new BezierLine(scorePose, lineup1Pose ));
-        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), lineup1Pose.getHeading(), .5);
+        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), lineup1Pose.getHeading(), .8);
 
 
     }
@@ -1005,19 +1005,19 @@ class Far_Red_2ndSpike extends OpMode {
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
         scorePreload = new Path(new BezierLine(startPose, scorePose));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .5);
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .8);
 
         readyPath = new Path(new BezierLine(scorePose, lineup1Pose));
         readyPath.setLinearHeadingInterpolation(scorePose.getHeading(), lineup1Pose.getHeading(), .8);
 
         lineup1Path = new Path(new BezierLine(lineup1Pose, pickup1Pose)) ;
-        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .5);
+        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .8);
 
         pickup1Path = new Path(new BezierLine(pickup1Pose, scorePose));
         pickup1Path.setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading(), .8);
 
         score1Path = new Path(new BezierLine(scorePose, lineup2Pose ));
-        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), lineup2Pose.getHeading(), .5);
+        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), lineup2Pose.getHeading(), .8);
 
         lineup2Path = new Path(new BezierLine(lineup2Pose, pickup2Pose));
         lineup2Path.setLinearHeadingInterpolation(lineup2Pose.getHeading(), pickup2Pose.getHeading(), .8);
@@ -1985,10 +1985,10 @@ class Near_Red_1stSpike extends OpMode {
     // Increased score y by 10
     //Increased pickup 1 x by 6
     private final Pose startPose = new Pose(88, 146, Math.toRadians(270)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(78, 110, Math.toRadians(138)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
-    private final Pose pickup1Pose = new Pose(118, 100, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose lineup1Pose = new Pose(92, 100, Math.toRadians(180));
-    private final Pose endPose = new Pose(100, 88, Math.toRadians(180));
+    private final Pose scorePose = new Pose(78, 110, Math.toRadians(58)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose pickup1Pose = new Pose(118, 100, Math.toRadians(0)); // Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose lineup1Pose = new Pose(92, 100, Math.toRadians(0));
+    private final Pose endPose = new Pose(100, 88, Math.toRadians(0));
 
     private Path scorePreload;
     private Path score1Path;
@@ -2001,19 +2001,19 @@ class Near_Red_1stSpike extends OpMode {
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
         scorePreload = new Path(new BezierLine(startPose, scorePose));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .5);
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .8);
 
         readyPath = new Path(new BezierLine(scorePose, lineup1Pose));
         readyPath.setLinearHeadingInterpolation(scorePose.getHeading(), lineup1Pose.getHeading(), .8);
 
         lineup1Path = new Path(new BezierLine(lineup1Pose, pickup1Pose)) ;
-        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .5);
+        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .8);
 
         pickup1Path = new Path(new BezierLine(pickup1Pose, scorePose));
         pickup1Path.setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading(), .8);
 
         score1Path = new Path(new BezierLine(scorePose, endPose ));
-        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), endPose.getHeading(), .5);
+        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), endPose.getHeading(), .8);
 
 
     }
@@ -2404,12 +2404,12 @@ class Near_Red_2ndSpike extends OpMode {
     // Increased score y by 10
     //Increased pickup 1 x by 6
     private final Pose startPose = new Pose(88, 146, Math.toRadians(270)); // Start Pose of our robot.
-    private final Pose scorePose = new Pose(78, 110, Math.toRadians(138));
-    private final Pose pickup1Pose = new Pose(118, 100, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose pickup2Pose = new Pose(118,76, Math.toRadians(180));
-    private final Pose lineup1Pose = new Pose(92, 100, Math.toRadians(180));
-    private final Pose lineup2Pose = new Pose(92, 76, Math.toRadians(180));
-    private final Pose endPose = new Pose(100, 88, Math.toRadians(180));
+    private final Pose scorePose = new Pose(78, 110, Math.toRadians(58));
+    private final Pose pickup1Pose = new Pose(118, 100, Math.toRadians(0)); // Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose pickup2Pose = new Pose(118,76, Math.toRadians(0));
+    private final Pose lineup1Pose = new Pose(92, 100, Math.toRadians(0));
+    private final Pose lineup2Pose = new Pose(92, 76, Math.toRadians(0));
+    private final Pose endPose = new Pose(100, 88, Math.toRadians(0));
 
     private Path scorePreload;
     private Path score1Path;
@@ -2425,28 +2425,28 @@ class Near_Red_2ndSpike extends OpMode {
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
         scorePreload = new Path(new BezierLine(startPose, scorePose));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .3);
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .8);
 
         readyPath = new Path(new BezierLine(scorePose, lineup1Pose));
         readyPath.setLinearHeadingInterpolation(scorePose.getHeading(), lineup1Pose.getHeading(), .8);
 
         lineup1Path = new Path(new BezierLine(lineup1Pose, pickup1Pose)) ;
-        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .5);
+        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .8);
 
         pickup1Path = new Path(new BezierLine(pickup1Pose, scorePose));
         pickup1Path.setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading(), .8);
 
         score1Path = new Path(new BezierLine(scorePose, lineup2Pose ));
-        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), lineup2Pose.getHeading(), .5);
+        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), lineup2Pose.getHeading(), .8);
 
         lineup2Path = new Path(new BezierLine(lineup2Pose, pickup2Pose));
-        lineup2Path.setLinearHeadingInterpolation(lineup2Pose.getHeading(), pickup2Pose.getHeading(), .5);
+        lineup2Path.setLinearHeadingInterpolation(lineup2Pose.getHeading(), pickup2Pose.getHeading(), .8);
 
         pickup2Path = new Path(new BezierLine(pickup2Pose, scorePose));
         pickup2Path.setLinearHeadingInterpolation(pickup2Pose.getHeading(), scorePose.getHeading(), .8);
 
         endPath = new Path(new BezierLine(scorePose, endPose));
-        endPath.setLinearHeadingInterpolation(scorePose.getHeading(), endPose.getHeading(), .5);
+        endPath.setLinearHeadingInterpolation(scorePose.getHeading(), endPose.getHeading(), .8);
     }
 
     public void autonomousPathUpdate() {
@@ -2521,7 +2521,7 @@ class Near_Red_2ndSpike extends OpMode {
             case 3_10:
                 if (!follower.isBusy()) {
 
-                    shootForTime(SHOOT_SECONDS);
+
                     setPathState(4);
                 }
                 break;
@@ -2890,14 +2890,14 @@ class Near_Red_3rdSpike extends OpMode {
     private int pathState;
 
     private final Pose startPose = new Pose(88, 146, Math.toRadians(270)); // Start Pose of our robot.
-    private final Pose score1Pose = new Pose(78, 110, Math.toRadians(138)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
-    private final Pose pickup1Pose = new Pose(118, 100, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
-    private final Pose pickup2Pose = new Pose(118,76, Math.toRadians(180));
-    private final Pose pickup3Pose = new Pose(118, 52, Math.toRadians(180));
-    private final Pose lineup1Pose = new Pose(92, 100, Math.toRadians(180));
-    private final Pose lineup2Pose = new Pose(92, 76, Math.toRadians(180));
-    private final Pose lineup3Pose = new Pose(92, 52, Math.toRadians(180));
-    private final Pose endPose = new Pose(100, 88, Math.toRadians(180));
+    private final Pose score1Pose = new Pose(78, 110, Math.toRadians(58)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose pickup1Pose = new Pose(118, 100, Math.toRadians(0)); // Highest (First Set) of Artifacts from the Spike Mark.
+    private final Pose pickup2Pose = new Pose(118,76, Math.toRadians(0));
+    private final Pose pickup3Pose = new Pose(118, 52, Math.toRadians(0));
+    private final Pose lineup1Pose = new Pose(92, 100, Math.toRadians(0));
+    private final Pose lineup2Pose = new Pose(92, 76, Math.toRadians(0));
+    private final Pose lineup3Pose = new Pose(92, 52, Math.toRadians(0));
+    private final Pose endPose = new Pose(100, 88, Math.toRadians(0));
 
 
 
@@ -2919,37 +2919,37 @@ class Near_Red_3rdSpike extends OpMode {
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
         scorePreload = new Path(new BezierLine(startPose, score1Pose));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), score1Pose.getHeading(), .5);
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), score1Pose.getHeading(), .8);
 
         readyPath = new Path(new BezierLine(score1Pose, lineup1Pose));
         readyPath.setLinearHeadingInterpolation(score1Pose.getHeading(), lineup1Pose.getHeading(), .8);
 
         lineup1Path = new Path(new BezierLine(lineup1Pose, pickup1Pose)) ;
-        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .5);
+        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .8);
 
         pickup1Path = new Path(new BezierLine(pickup1Pose, score1Pose));
         pickup1Path.setLinearHeadingInterpolation(pickup1Pose.getHeading(), score1Pose.getHeading(), .8);
 
         score1Path = new Path(new BezierLine(score1Pose, lineup2Pose ));
-        score1Path.setLinearHeadingInterpolation(score1Pose.getHeading(), lineup2Pose.getHeading(), .5);
+        score1Path.setLinearHeadingInterpolation(score1Pose.getHeading(), lineup2Pose.getHeading(), .8);
 
         lineup2Path = new Path(new BezierLine(lineup2Pose, pickup2Pose));
-        lineup2Path.setLinearHeadingInterpolation(lineup2Pose.getHeading(), pickup2Pose.getHeading(), .5);
+        lineup2Path.setLinearHeadingInterpolation(lineup2Pose.getHeading(), pickup2Pose.getHeading(), .8);
 
         pickup2Path = new Path(new BezierLine(pickup2Pose, score1Pose));
         pickup2Path.setLinearHeadingInterpolation(pickup2Pose.getHeading(), score1Pose.getHeading(), .8);
 
         score2Path = new Path(new BezierLine(score1Pose, lineup3Pose));
-        score2Path.setLinearHeadingInterpolation(score1Pose.getHeading(), lineup1Pose.getHeading(), .5);
+        score2Path.setLinearHeadingInterpolation(score1Pose.getHeading(), lineup1Pose.getHeading(), .8);
 
         lineup3Path = new Path(new BezierLine(lineup3Pose, pickup3Pose));
-        lineup3Path.setLinearHeadingInterpolation(lineup3Pose.getHeading(), pickup3Pose.getHeading(), .5);
+        lineup3Path.setLinearHeadingInterpolation(lineup3Pose.getHeading(), pickup3Pose.getHeading(), .8);
 
         pickup3Path = new Path(new BezierLine(pickup3Pose, score1Pose));
         pickup3Path.setLinearHeadingInterpolation(pickup3Pose.getHeading(), score1Pose.getHeading(), .8);
 
         score3Path = new Path(new BezierLine(score1Pose, endPose));
-        score3Path.setLinearHeadingInterpolation(score1Pose.getHeading(), endPose.getHeading(), .5);
+        score3Path.setLinearHeadingInterpolation(score1Pose.getHeading(), endPose.getHeading(), .8);
 
     }
 
@@ -3019,7 +3019,7 @@ class Near_Red_3rdSpike extends OpMode {
                 break;
             case 3_10:
                 if (!follower.isBusy()) {
-                    shootForTime(SHOOT_SECONDS);
+
                     setPathState(4);
                 }
                 break;
@@ -3053,7 +3053,7 @@ class Near_Red_3rdSpike extends OpMode {
                 break;
             case 6_10:
                 if (!follower.isBusy()) {
-                    shootForTime(SHOOT_SECONDS);
+
                     setPathState(7);
                 }
                 break;

@@ -185,7 +185,7 @@ class Far_Blue_Preload extends OpMode {
 
     private final Pose startPose = new Pose(56, 8, Math.toRadians(90)); // Start Pose of our robot.
     private final Pose scorePose = new Pose(53.6, 13/*11.1*/, Math.toRadians(108)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
-    private final Pose movePose = new Pose(56, 23, Math.toRadians(180)); // Out to score Move points.
+    private final Pose movePose = new Pose(46, 30, Math.toRadians(180)); // Out to score Move points.
 
     private Path scorePreload;
     private Path movePath;
@@ -194,7 +194,7 @@ class Far_Blue_Preload extends OpMode {
     public void buildPaths() {
 
         scorePreload = new Path(new BezierLine(startPose, scorePose));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .5);
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .8);
 
         movePath = new Path(new BezierLine(scorePose, movePose));
         movePath.setLinearHeadingInterpolation(scorePose.getHeading(), movePose.getHeading(), .8);
@@ -478,7 +478,7 @@ class Far_Blue_Preload extends OpMode {
 class Far_Blue_1stSpike extends OpMode {
 
     private static final double SHOOT_SECONDS = 1.75;           // TODO: Change this if isn't enough time or too much...6 was too much
-    private static final double INTAKE_DISTANCE = 2275;
+    private static final double INTAKE_DISTANCE = 2250;
     private static final double DRIVE_FORWARD_INCHES = 20.0; //TODO: Change if distance is wrong
 
     private static final double MAX_DRIVE_SPEED = .8; // Change this for the max speed
@@ -570,19 +570,19 @@ class Far_Blue_1stSpike extends OpMode {
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
         scorePreload = new Path(new BezierLine(startPose, scorePose));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .5);
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .8);
 
         readyPath = new Path(new BezierLine(scorePose, lineup1Pose));
         readyPath.setLinearHeadingInterpolation(scorePose.getHeading(), lineup1Pose.getHeading(), .8);
 
         lineup1Path = new Path(new BezierLine(lineup1Pose, pickup1Pose)) ;
-        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .5);
+        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .8);
 
         pickup1Path = new Path(new BezierLine(pickup1Pose, scorePose));
         pickup1Path.setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading(), .8);
 
         score1Path = new Path(new BezierLine(scorePose, lineup1Pose ));
-        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), lineup1Pose.getHeading(), .5);
+        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), lineup1Pose.getHeading(), .8);
 
 
     }
@@ -910,7 +910,7 @@ class Far_Blue_1stSpike extends OpMode {
 class Far_Blue_2ndSpike extends OpMode {
 
     private static final double SHOOT_SECONDS = 1.75;           // TODO: Change this if isn't enough time or too much...6 was too much
-    private static final double INTAKE_DISTANCE = 2275;
+    private static final double INTAKE_DISTANCE = 2250;
     private static final double DRIVE_FORWARD_INCHES = 20.0; //TODO: Change if distance is wrong
     public double leftError;
     public double rightError;
@@ -1005,19 +1005,19 @@ class Far_Blue_2ndSpike extends OpMode {
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
         scorePreload = new Path(new BezierLine(startPose, scorePose));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .5);
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .8);
 
         readyPath = new Path(new BezierLine(scorePose, lineup1Pose));
         readyPath.setLinearHeadingInterpolation(scorePose.getHeading(), lineup1Pose.getHeading(), .8);
 
         lineup1Path = new Path(new BezierLine(lineup1Pose, pickup1Pose)) ;
-        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .5);
+        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .8);
 
         pickup1Path = new Path(new BezierLine(pickup1Pose, scorePose));
         pickup1Path.setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading(), .8);
 
         score1Path = new Path(new BezierLine(scorePose, lineup2Pose ));
-        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), lineup2Pose.getHeading(), .5);
+        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), lineup2Pose.getHeading(), .8);
 
         lineup2Path = new Path(new BezierLine(lineup2Pose, pickup2Pose));
         lineup2Path.setLinearHeadingInterpolation(lineup2Pose.getHeading(), pickup2Pose.getHeading(), .8);
@@ -1404,7 +1404,7 @@ class Far_Blue_2ndSpike extends OpMode {
 class Far_Blue_3rdSpike extends OpMode {
 
     private static final double SHOOT_SECONDS = 1.75;           // TODO: Change this if isn't enough time or too much...6 was too much
-    private static final double INTAKE_DISTANCE = 2300;
+    private static final double INTAKE_DISTANCE = 2250;
     private static final double DRIVE_FORWARD_INCHES = 20.0; //TODO: Change if distance is wrong
     public double leftError;
     public double rightError;
@@ -1908,7 +1908,7 @@ class Far_Blue_3rdSpike extends OpMode {
 class Near_Blue_1stSpike extends OpMode {
 
     private static final double SHOOT_SECONDS = 1.75;           // TODO: Change this if isn't enough time or too much...6 was too much
-    private static final double INTAKE_DISTANCE = 2275;
+    private static final double INTAKE_DISTANCE = 2250;
     private static final double DRIVE_FORWARD_INCHES = 20.0; //TODO: Change if distance is wrong
     public double leftError;
     public double rightError;
@@ -2001,19 +2001,19 @@ class Near_Blue_1stSpike extends OpMode {
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
         scorePreload = new Path(new BezierLine(startPose, scorePose));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .5);
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .8);
 
         readyPath = new Path(new BezierLine(scorePose, lineup1Pose));
         readyPath.setLinearHeadingInterpolation(scorePose.getHeading(), lineup1Pose.getHeading(), .8);
 
         lineup1Path = new Path(new BezierLine(lineup1Pose, pickup1Pose)) ;
-        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .5);
+        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .8);
 
         pickup1Path = new Path(new BezierLine(pickup1Pose, scorePose));
         pickup1Path.setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading(), .8);
 
         score1Path = new Path(new BezierLine(scorePose, endPose ));
-        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), endPose.getHeading(), .5);
+        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), endPose.getHeading(), .8);
 
 
     }
@@ -2327,7 +2327,7 @@ class Near_Blue_1stSpike extends OpMode {
 class Near_Blue_2ndSpike extends OpMode {
 
     private static final double SHOOT_SECONDS = 1.75;           // TODO: Change this if isn't enough time or too much...6 was too much
-    private static final double INTAKE_DISTANCE = 2275;
+    private static final double INTAKE_DISTANCE = 2250;
     private static final double DRIVE_FORWARD_INCHES = 20.0; //TODO: Change if distance is wrong
     public double leftError;
     public double rightError;
@@ -2425,28 +2425,28 @@ class Near_Blue_2ndSpike extends OpMode {
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
         scorePreload = new Path(new BezierLine(startPose, scorePose));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .3);
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), .8);
 
         readyPath = new Path(new BezierLine(scorePose, lineup1Pose));
         readyPath.setLinearHeadingInterpolation(scorePose.getHeading(), lineup1Pose.getHeading(), .8);
 
         lineup1Path = new Path(new BezierLine(lineup1Pose, pickup1Pose)) ;
-        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .5);
+        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .8);
 
         pickup1Path = new Path(new BezierLine(pickup1Pose, scorePose));
         pickup1Path.setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading(), .8);
 
         score1Path = new Path(new BezierLine(scorePose, lineup2Pose ));
-        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), lineup2Pose.getHeading(), .5);
+        score1Path.setLinearHeadingInterpolation(scorePose.getHeading(), lineup2Pose.getHeading(), .8);
 
         lineup2Path = new Path(new BezierLine(lineup2Pose, pickup2Pose));
-        lineup2Path.setLinearHeadingInterpolation(lineup2Pose.getHeading(), pickup2Pose.getHeading(), .5);
+        lineup2Path.setLinearHeadingInterpolation(lineup2Pose.getHeading(), pickup2Pose.getHeading(), .8);
 
         pickup2Path = new Path(new BezierLine(pickup2Pose, scorePose));
         pickup2Path.setLinearHeadingInterpolation(pickup2Pose.getHeading(), scorePose.getHeading(), .8);
 
         endPath = new Path(new BezierLine(scorePose, endPose));
-        endPath.setLinearHeadingInterpolation(scorePose.getHeading(), endPose.getHeading(), .5);
+        endPath.setLinearHeadingInterpolation(scorePose.getHeading(), endPose.getHeading(), .8);
     }
 
     public void autonomousPathUpdate() {
@@ -2521,7 +2521,7 @@ class Near_Blue_2ndSpike extends OpMode {
             case 3_10:
                 if (!follower.isBusy()) {
 
-                    shootForTime(SHOOT_SECONDS);
+
                     setPathState(4);
                 }
                 break;
@@ -2814,7 +2814,7 @@ class Near_Blue_2ndSpike extends OpMode {
 class Near_Blue_3rdSpike extends OpMode {
 
     private static final double SHOOT_SECONDS = 1.75;           // TODO: Change this if isn't enough time or too much...6 was too much
-    private static final double INTAKE_DISTANCE = 2275;
+    private static final double INTAKE_DISTANCE = 2250;
     private static final double DRIVE_FORWARD_INCHES = 20.0; //TODO: Change if distance is wrong
     public double leftError;
     public double rightError;
@@ -2919,37 +2919,37 @@ class Near_Blue_3rdSpike extends OpMode {
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
         scorePreload = new Path(new BezierLine(startPose, score1Pose));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), score1Pose.getHeading(), .5);
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), score1Pose.getHeading(), .8);
 
         readyPath = new Path(new BezierLine(score1Pose, lineup1Pose));
-        readyPath.setLinearHeadingInterpolation(score1Pose.getHeading(), lineup1Pose.getHeading(), .8);
+        readyPath.setLinearHeadingInterpolation(score1Pose.getHeading(), lineup1Pose.getHeading(), 1);
 
         lineup1Path = new Path(new BezierLine(lineup1Pose, pickup1Pose)) ;
-        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .5);
+        lineup1Path.setLinearHeadingInterpolation(lineup1Pose.getHeading(), pickup1Pose.getHeading(), .8);
 
         pickup1Path = new Path(new BezierLine(pickup1Pose, score1Pose));
         pickup1Path.setLinearHeadingInterpolation(pickup1Pose.getHeading(), score1Pose.getHeading(), .8);
 
         score1Path = new Path(new BezierLine(score1Pose, lineup2Pose ));
-        score1Path.setLinearHeadingInterpolation(score1Pose.getHeading(), lineup2Pose.getHeading(), .5);
+        score1Path.setLinearHeadingInterpolation(score1Pose.getHeading(), lineup2Pose.getHeading(), .8);
 
         lineup2Path = new Path(new BezierLine(lineup2Pose, pickup2Pose));
-        lineup2Path.setLinearHeadingInterpolation(lineup2Pose.getHeading(), pickup2Pose.getHeading(), .5);
+        lineup2Path.setLinearHeadingInterpolation(lineup2Pose.getHeading(), pickup2Pose.getHeading(), .8);
 
         pickup2Path = new Path(new BezierLine(pickup2Pose, score1Pose));
         pickup2Path.setLinearHeadingInterpolation(pickup2Pose.getHeading(), score1Pose.getHeading(), .8);
 
         score2Path = new Path(new BezierLine(score1Pose, lineup3Pose));
-        score2Path.setLinearHeadingInterpolation(score1Pose.getHeading(), lineup1Pose.getHeading(), .5);
+        score2Path.setLinearHeadingInterpolation(score1Pose.getHeading(), lineup1Pose.getHeading(), .8);
 
         lineup3Path = new Path(new BezierLine(lineup3Pose, pickup3Pose));
-        lineup3Path.setLinearHeadingInterpolation(lineup3Pose.getHeading(), pickup3Pose.getHeading(), .5);
+        lineup3Path.setLinearHeadingInterpolation(lineup3Pose.getHeading(), pickup3Pose.getHeading(), .8);
 
         pickup3Path = new Path(new BezierLine(pickup3Pose, score1Pose));
         pickup3Path.setLinearHeadingInterpolation(pickup3Pose.getHeading(), score1Pose.getHeading(), .8);
 
         score3Path = new Path(new BezierLine(score1Pose, endPose));
-        score3Path.setLinearHeadingInterpolation(score1Pose.getHeading(), endPose.getHeading(), .5);
+        score3Path.setLinearHeadingInterpolation(score1Pose.getHeading(), endPose.getHeading(), .8);
 
     }
 
@@ -3019,7 +3019,6 @@ class Near_Blue_3rdSpike extends OpMode {
                 break;
             case 3_10:
                 if (!follower.isBusy()) {
-                    shootForTime(SHOOT_SECONDS);
                     setPathState(4);
                 }
                 break;
@@ -3053,7 +3052,7 @@ class Near_Blue_3rdSpike extends OpMode {
                 break;
             case 6_10:
                 if (!follower.isBusy()) {
-                    shootForTime(SHOOT_SECONDS);
+
                     setPathState(7);
                 }
                 break;
