@@ -258,7 +258,7 @@ public class BLUEMainTeleOpNEW_INTAKE extends LinearOpMode {
             case ALIGNING: {
 
                 // Manual override → skip alignment and keep scoring
-                if (gamepad1.b) {
+                if (gamepad1.dpad_left) {
                     shootState = ShootState.SPINNING_UP;
                     break;
                 }

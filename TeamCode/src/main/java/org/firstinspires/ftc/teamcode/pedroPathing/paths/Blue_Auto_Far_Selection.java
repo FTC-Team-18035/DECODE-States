@@ -32,7 +32,7 @@ import org.firstinspires.ftc.teamcode.SerqetCode.ShooterSubsystemSCRIMMAGE;
 
 import java.util.ArrayList;
 import java.util.List;
-
+// TODO ending poses should be 180 for field centric
 @Autonomous(name = "Blue Auto Selection", group = "Examples", preselectTeleOp = "BLUE Main TeleOp")
  public class Blue_Auto_Far_Selection extends SelectableOpMode {
     public static Follower follower;
@@ -1489,7 +1489,7 @@ class Far_Blue_3rdSpike extends OpMode {
     private final Pose lineup2Pose = new Pose(41.9, 69, Math.toRadians(180));
     private final Pose lineup3Pose = new Pose(41, 93.5, Math.toRadians(180));
     private final Pose empty = new Pose(16.2, 69.8, Math.toRadians(180));
-    private final Pose endPose = new Pose(53.6, 20, Math.toRadians(0));
+    private final Pose endPose = new Pose(53.6, 20, Math.toRadians(180));
 
 
     private Path scorePreload;
@@ -1652,6 +1652,12 @@ class Far_Blue_3rdSpike extends OpMode {
             case 9:
                 if(!follower.isBusy()) {
                     shootForTime(SHOOT_SECONDS);
+                    setPathState(10);
+                }
+                break;
+            case 10:
+                if(!follower.isBusy()) {
+                    follower.followPath(endPath);
                     setPathState(-1);
                 }
                 break;

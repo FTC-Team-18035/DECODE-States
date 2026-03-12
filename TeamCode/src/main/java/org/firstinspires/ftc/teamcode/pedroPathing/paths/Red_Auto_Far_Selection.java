@@ -32,7 +32,7 @@ import org.firstinspires.ftc.teamcode.SerqetCode.ShooterSubsystemSCRIMMAGE;
 
 import java.util.ArrayList;
 import java.util.List;
-
+// TODO ending poses should be 0 to assist with field centric
 @Autonomous(name = "Red Auto Selection", group = "Examples", preselectTeleOp = "RED Main TeleOp")
 public class Red_Auto_Far_Selection extends SelectableOpMode {
     public static Follower follower;
@@ -1489,7 +1489,7 @@ class Far_Red_3rdSpike extends OpMode {
     private final Pose lineup2Pose = new Pose(95, 53,Math.toRadians(0));  // y55
     private final Pose lineup3Pose = new Pose(95, 75, Math.toRadians(0));
     private final Pose empty = new Pose(16.2,59.8,Math.toRadians(0));
-    private final Pose endPose = new Pose(53.6, 20, Math.toRadians(180));
+    private final Pose endPose = new Pose(53.6, 20, Math.toRadians(0));
 
 
     private Path scorePreload;
@@ -1537,7 +1537,7 @@ class Far_Red_3rdSpike extends OpMode {
         emptyPath = new Path(new BezierLine(empty, endPose));
         emptyPath.setLinearHeadingInterpolation(empty.getHeading(), endPose.getHeading(), .8);
 
-        endPath = new Path(new BezierLine(scorePose, endPose));
+        endPath = new Path(new BezierLine(score3Pose, endPose));
         endPath.setLinearHeadingInterpolation(scorePose.getHeading(), endPose.getHeading(), .8);
 
         lineup3Path = new Path(new BezierLine(score2Pose, lineup3Pose));
@@ -1652,6 +1652,12 @@ class Far_Red_3rdSpike extends OpMode {
             case 9:
                 if(!follower.isBusy()) {
                     shootForTime(SHOOT_SECONDS);
+                    setPathState(10);
+                }
+                break;
+            case 10:
+                if(!follower.isBusy()) {
+                    follower.followPath(endPath);
                     setPathState(-1);
                 }
                 break;

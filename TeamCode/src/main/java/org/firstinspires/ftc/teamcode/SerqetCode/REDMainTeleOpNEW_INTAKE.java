@@ -258,13 +258,13 @@ public class REDMainTeleOpNEW_INTAKE extends LinearOpMode {
             case ALIGNING: {
 
                 // Manual override → skip alignment and keep scoring
-                if (gamepad1.b) {
+                if (gamepad1.dpad_left) {
                     shootState = ShootState.SPINNING_UP;
                     break;
                 }
 
                 // Horizontal offset from Limelight (degrees)
-                double tx = result.getTx();
+                double tx = result.getTx() + 4;
                 double absError = Math.abs(tx);
 
                 /* ----- Track whether we're still improving ----- */
