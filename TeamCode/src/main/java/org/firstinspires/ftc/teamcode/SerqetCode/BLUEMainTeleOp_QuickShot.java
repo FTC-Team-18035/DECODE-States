@@ -5,6 +5,7 @@ import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.constants.PinpointConstants;
+import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -15,6 +16,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
+// TODO test the speed of this alignment procedure
 
 @TeleOp(name = "BLUE TeleOp_QuickShot", group = "PedroPathing")
 public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
@@ -70,9 +73,9 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
     // Telemetry values
     public double leftError;
     public double rightError;
-    public double pullBackTicks = -60;
 
-    public Pose initialPose = new Pose();   // New alignment calculation help
+    // Pullback function to realign overfed artifacts
+    public double pullBackTicks = -60;
 
     /* =========================================================
        HARDWARE
@@ -101,6 +104,10 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
     // Best heading error seen so far during this alignment attempt
     private double bestHeadingErrorDeg = Double.MAX_VALUE;
 
+    // Pose help for test alignment function
+    public Pose initialPose = new Pose();
+    public Pose shootPose = new Pose();
+
     /* =========================================================
        DISTANCE TRACKING
        ========================================================= */
@@ -115,6 +122,15 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
 
     public double scalar;
     public boolean pullBackStarted = false;
+
+    /* =========================================================
+       BLACKBOARD
+       ========================================================= */
+
+    public static final String X_KEY = "hash X";
+    public static final String Y_KEY = "hash Y";
+    public static final String Z_KEY = "hash Z";
+
 
     @Override
     public void runOpMode() {
@@ -150,6 +166,14 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
                 .mecanumDrivetrain(mecanumConstants)
                 .pinpointLocalizer(pinpointConstants)
                 .build();
+        // Blackboard value grab from autonomous
+        double startX = (double) blackboard.get(X_KEY);
+        double startY = (double) blackboard.get(Y_KEY);
+        double startZ = (double) blackboard.get(Z_KEY);
+
+        Pose hashPose = new Pose( startX, startY, startZ);
+        // Set initial Pose from autonomous
+        follower.setPose(hashPose);
 
         waitForStart();
         follower.startTeleOpDrive();
@@ -179,14 +203,13 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
         // Disable manual driving during shooting sequence
         if (shootState != ShootState.IDLE) return;
 
-        if (gamepad1.left_trigger > .5){
+        if (gamepad1.left_trigger > .5) {
             scalar = 1;
-        }
-        else if (gamepad1.left_trigger < .5) {
+        } else if (gamepad1.left_trigger < .5) {
             scalar = .5;
         }
 
-        if(gamepad1.left_trigger > .75 && gamepad1.right_trigger > .75) {
+        if (gamepad1.left_trigger > .75 && gamepad1.right_trigger > .75) {
             heading = follower.getHeading();
         }
         follower.setTeleOpDrive(
@@ -268,7 +291,7 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
             case ALIGNING: {
 
                 // Manual override → skip alignment and keep scoring
-                if (gamepad1.b) {
+                if (gamepad1.dpad_left) {
                     shootState = ShootState.SPINNING_UP;
                     break;
                 }
@@ -284,6 +307,7 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
                     LOStimestamp = getRuntime();
                 }
                 double absError = Math.abs((lastTargetPose.getHeading() - follower.getPose().getHeading()));
+                double pPError = follower.getHeadingError();  // this is what pedro follower is seeing
 
                 /* ----- Track whether we're still improving ----- */
                 if (absError < bestHeadingErrorDeg - ALIGN_MIN_IMPROVEMENT) {
@@ -312,6 +336,7 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
                 /* ----- Exit condition ----- */
                 if (absError <= ALIGN_ACCEPTABLE_ERROR &&
                         alignStallCounter >= ALIGN_STALL_CYCLES) {
+                    shootPose = follower.getPose();     // Grab improved pose for holding
                     shootState = ShootState.SPINNING_UP;
                 }
 
@@ -322,7 +347,9 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
                SPINNING UP
                ===================================================== */
             case SPINNING_UP: {
-                follower.setTeleOpDrive(0, 0, 0, false, heading);
+                follower.holdPoint(shootPose); // hold the current point for shooting
+
+                // follower.setTeleOpDrive(0, 0, 0, false, heading);
 
                 double distanceMeters =
                         (TARGET_HEIGHT - LIMELIGHT_HEIGHT) /
@@ -361,7 +388,8 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
                FEEDING
                ===================================================== */
             case FEEDING:
-                follower.setTeleOpDrive(0, 0, 0, false, heading);
+                // continue using holdPoint
+                //follower.setTeleOpDrive(0, 0, 0, false, heading);
                 intake.setPower(1);
                 break;
 
@@ -410,10 +438,9 @@ public class BLUEMainTeleOp_QuickShot extends LinearOpMode {
     }
 
     private void handleLift() {
-        if(gamepad1.dpad_up && gamepad1.left_trigger > .75 && lift.getCurrentPosition() < 3600) {    //TODO Changed it so you have to be holding the left trigger to run the lift
+        if (gamepad1.dpad_up && gamepad1.left_trigger > .75 && lift.getCurrentPosition() < 3600) {    //TODO Changed it so you have to be holding the left trigger to run the lift
             lift.setPower(1);
-        }
-        else {
+        } else {
             lift.setPower(0);
         }
     }
