@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.SerqetCode;
+package org.firstinspires.ftc.teamcode.testCode;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
@@ -12,6 +12,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+
+import org.firstinspires.ftc.teamcode.SerqetCode.ShooterSubsystemSCRIMMAGE;
+import org.firstinspires.ftc.teamcode.SerqetCode.TrajectorySCRIMMAGE;
 
 @Disabled
 @TeleOp(name = "BLUE Main TeleOp ***Deprecated", group = "PedroPathing")
