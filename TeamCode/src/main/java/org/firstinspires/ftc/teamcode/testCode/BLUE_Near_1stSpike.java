@@ -29,7 +29,7 @@ public class BLUE_Near_1stSpike extends OpMode {
     public double rightError;
     private static final double FLYWHEEL_TOLERANCE = 50;
     private static final double MAX_DRIVE_SPEED = .8; // Change this for the max speed
-    private static final double MAX_INTAKE_SPEED = .5; // Change this if we need to intake slower
+    private static final double MAX_INTAKE_SPEED = .6; // Change this if we need to intake slower
     private static final double DRIVE_POWER = 0.7;
     private static final double DRIVE_TIMEOUT_SECONDS = 20.0;
 
@@ -113,7 +113,7 @@ public class BLUE_Near_1stSpike extends OpMode {
     private final Pose scorePose = new Pose(66, 110, Math.toRadians(138)); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
     private final Pose pickup1Pose = new Pose(26, 100, Math.toRadians(180)); // Highest (First Set) of Artifacts from the Spike Mark.
     private final Pose lineup1Pose = new Pose(52, 100, Math.toRadians(180)); // Increased by 4
-    private final Pose endPose = new Pose(34, 88, Math.toRadians(180));
+    private final Pose endPose = new Pose(27, 82, Math.toRadians(270));
 
     private Path scorePreload;
     private Path score1Path;
@@ -443,6 +443,7 @@ public class BLUE_Near_1stSpike extends OpMode {
         return radians;
     }
 }
+
 
 
 
